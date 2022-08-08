@@ -11,24 +11,29 @@
 
 \section{Model}
 
-We consider a semi-Markov Decision Process $M = \langle \mathcal{S}, \mathcal{A}, p, r, \tau \rangle$ where $\mathcal{S}$ is a finite set of states, $\mathcal{A}$ is a finite set of actions, $p$ is the transition distribution such that the model transition from $s$ to $s'$ under action $a$ with probability $p(s' \, | \, s, a)$, $r$ is the reward distribution such that the agent observes the (stochastic) reward $r(s, a)$ upon taking action $a$ in state $s$, and $\tau$ is the duration time distribution such that the agent takes $\tau(s, a, s')$ time to move from state $s$ to state $s'$ with action $a$.
+We consider a semi-Markov Decision Process $M = \langle \mathcal{S}, \mathcal{A}, p, r \rangle$ where $\mathcal{S}$ is a finite set of states, $\mathcal{A}$ is a finite set of actions, $p$ is the \textit{joint} transition distribution such that the model transition from $s$ to $s'$ in $\tau > 0$ time under action $a$ with probability $p(s', \tau \, | \, s, a)$, $r$ is the reward distribution such that the agent observes the (stochastic) reward $r(s, a) \in [0, 1]$ upon taking action $a$ in state $s$.
 
-A stationary policy $\pi : \mathcal{S} \to \Delta(\mathcal{A})$ maps each state to a probability distribution over $\mathcal{A}$, as a decision rule. A deterministic policy maps each state to one action only. A history under $\pi$ is a sequence of transitions $\{s_t, a_t, r_t, \tau_t\}_{t = 0}^{+ \infty}$ such that the action $a_t$ is taken accordingly to $\pi(s_t)$ and the next state $s_{t+1}$, the reward $r_t$ and the duration time $\tau_t$ are sampled from $p(\cdot \, |\, s_t, a_t)$, $r(s_t, a_t)$ and $\tau(s_t, a_t, s_{t+1})$ respectively.
+A stationary policy $\pi : \mathcal{S} \to \Delta(\mathcal{A})$ maps each state to a probability distribution over $\mathcal{A}$, as a decision rule. A deterministic policy maps each state to one action only. A history under $\pi$ is a sequence of transitions $\{s_t, a_t, r_t, \tau_t\}_{t = 0}^{+ \infty}$ such that the action $a_t$ is taken accordingly to $\pi(s_t)$ and the next state $s_{t+1}$, duration time $\tau_t$ and the reward $r_t$ are sampled from $p(\cdot, \cdot \, |\, s_t, a_t)$ and $r(s_t, a_t)$.
 
-We place ourselves in the infinite-horizon with discount setting, meaning that we let the agent play forever, and we apply a discount based on parameter  $\gamma \in ]0, 1[$ and duration time on the received rewards, such that the total cumulative reward is defined as $\sum_{t = 0}^{+ \infty} \gamma^{\tau_t} r_t$.
+We place ourselves in the infinite-horizon with discount setting, meaning that we let the agent play forever, and we apply a discount based on parameter  $\gamma \in ]0, 1[$ and duration time on the received rewards, such that the total cumulative reward is defined as $\sum_{t = 0}^{+ \infty} \gamma^{\sigma_t} r_t$, where $\sigma_t = \sum_{i=0}^{t-1} \tau_i$ ($\sigma_0 = 0$), the total time at decision step $t$. To ensure the convergence of the cumulative reward, we need to assume that $\tau$ is lower-bounded by $\tau_{\min} > 0$. Indeed, if $\tau_{\min} = 0$ then one can consider the sequence of duration times $\{\tau_t = 1/(t + 1)^2\}_{t=0}^{\infty}$; it is well known that this series converges toward $\pi^2/6$, so that $\sigma_t < \pi^2/6$ for all $t$, hence $$\sum_{t = 0}^{\infty} \gamma^{\sigma_t} r_t \geq \sum_{t=0}^{\infty} \gamma^{\frac{\pi^2}{6}} = + \infty.$$
 
 \textbf{Q-function and Bellman operator:} an interesting quantity to consider is the value function of a policy $\pi$:
-$$\forall s \in \mathcal{S}, \qquad V^{\pi}(s) := \mathbb{E} \left[\sum_{t = 0}^{\infty} \gamma^{\tau(s_t, a_t)} r(s_t, a_t) \, |\,  s_0 = s \right],$$
-the expected discounted cumulative reward obtained when starting from state $s$ and following policy $\pi$ ($a_t \sim \pi(s_t)$).  Similarly, the action-value (or Q-value) function of a policy $\pi$ is defined as follow:
-$$\forall (s, a) \in \mathcal{S} \times \mathcal{A}, \qquad Q^{\pi}(s,a) := \mathbb{E} \left[\sum_{t = 0}^{\infty} \gamma^{\tau(s_t, a_t)} r(s_t, a_t) \, |\,  s_0 = s, a_0 = a \right].$$
+$$\forall s \in \mathcal{S}, \qquad V^{\pi}(s) := \mathbb{E} \left[\sum_{t = 0}^{\infty} \gamma^{\sigma_{t}} r(s_t, a_t) \, \middle| \,  s_0 = s \right],$$
+the expected discounted cumulative reward obtained when starting from state $s$ and following policy $\pi$ ($a_t \sim \pi(s_t)$). It is easy to see that, for all policies, $0 \leq V^{\pi} \leq 1/(1 - \gamma^{\tau_{\min}})$.  Similarly, the action-value (or Q-value) function of a policy $\pi$ is defined as follow:
+$$\forall (s, a) \in \mathcal{S} \times \mathcal{A}, \qquad Q^{\pi}(s,a) := \mathbb{E} \left[\sum_{t = 0}^{\infty} \gamma^{\sigma_{t}} r(s_t, a_t) \, \middle| \,  s_0 = s,\, a_0 = a \right].$$
 
 There exists an optimal policy $\pi^*$ that maximises $V^{\pi}$ and $Q^{\pi}$ over all states and state-action pairs. We denote $V^{\pi^*} = V^*$ and $Q^{\pi^*} = Q^*$.
 
 The Q-function is the unique fixed point of the Bellman operator $\mathcal{T}: \mathbb{R}^{S \times A} \to \mathbb{R}^{S \times A}$:
-$$\mathcal{T}(Q^{\pi})(s, a) := \bar r(s, a) + \mathbb{E}_{s' \sim p(\cdot | s, a), t \sim \tau(s, a, s')} \left[ \gamma^t Q(s', \pi(s')) \right],$$
+$$\forall (s, a) \in \mathcal{S} \times \mathcal{A}, \quad \mathcal{T}(Q^{\pi})(s, a) := \bar r(s, a) + \mathbb{E}_{(s', t) \sim p(\cdot, \cdot | s, a)} \left[ \gamma^t Q^{\pi}(s', \pi(s')) \right] = Q^{\pi}(s, a),$$
 where $\bar r(s, a)$ is the mean reward for state-action pair $(s, a)$.
 
 In particular, the optimal Bellman operator is:
-$$\mathcal{T^*}(Q)(s, a) := \bar r(s, a) + \mathbb{E}_{s' \sim p(\cdot | s, a), t \sim \tau(s, a, s')} \left[ \gamma^t \max_{a' \in \mathcal{A}} Q(s', a') \right].$$
+\begin{align*}
+  \mathcal{T^*}(Q)(s, a) :&= \bar r(s, a) + \mathbb{E}_{(s', t) \sim p(\cdot, \cdot | s, a)} \left[ \gamma^t \max_{a' \in \mathcal{A}} Q(s', a') \right]\\
+  &= \bar r(s, a) + \int_{s' \in \mathcal{S}} \int_0^{+ \infty} \gamma^t V^*(s') p(s', t | s, a) dt ds' \\
+  &= \bar r(s, a) + \int_{s' \in \mathcal{S}} V^*(s') \tilde p(s' | s, a) ds'
+\end{align*}
 
+where $\tilde p(s', t | s, a) = \int_0^{+\infty} \gamma^t p(s', t | s, a) dt$ is the expected discounted probability kernel.
 \end{document}

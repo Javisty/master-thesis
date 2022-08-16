@@ -36,4 +36,84 @@ In particular, the optimal Bellman operator is:
 \end{align*}
 
 where $\tilde p(s', t | s, a) = \int_0^{+\infty} \gamma^t p(s', t | s, a) dt$ is the expected discounted probability kernel.
+
+
+\section{$\gamma^{\tau}$ is subGaussian}
+
+Let's assume that $0 < \tau$ is $\sigma^2$-subGaussian; we want to find a constant $C_{\sigma}$ such that $\gamma^\tau$ is $C_{\sigma}$-subGaussian.
+
+First of all, here are a bunch of useful notations and relations:\\
+\begin{tabular}{c c c}
+  $\mu = \mathbb{E}[\tau]$ & $\eta = \mathbb{E}[\gamma^\tau]$ & $c = \frac{1}{2 \sigma^2}$\\[.3cm]
+  (Jensen) $\gamma^\mu \leq \eta \iff$ & $\mu \geq \frac{\log(\eta)}{\log(\gamma)}$ & $\log(\eta + t) \leq \log(\eta) + \frac{t}{\eta}$\\[.3cm]
+  $\forall t > 0$, & $\mathbb{P}(|\tau - \mu | \geq t) \leq 2 e^{-c t^2}$, & $\mathbb{E}[e^{t(\tau - \mu)}] \leq e^{\frac{1}{2}\sigma^2 t^2}$
+\end{tabular}
+
+\subsection{Main lines}
+
+The goal is to find a constant $a>0$ such that:
+$$\forall t>0, \mathbb{P}(|\gamma^\tau - \eta| \geq t) \leq 2e^{-a t^2},$$
+which is sufficient to prove that $\gamma^\tau$ is $\frac{1}{\sqrt{2a}}$-subGaussian \footnote{see https://sites.ualberta.ca/~omarr/pubs/note/subgaussians.pdf, Theorem 3.1}.
+
+First of all, given that $0 < \gamma^\tau < 1$:
+$$\forall t \geq 1, \mathbb{P}(|\gamma^\tau - \eta| \geq t) = 0$$
+
+From now on, let's assume $0 < t < 1$.
+
+\textbf{if $\tau \leq \frac{\log(\eta)}{\log(\gamma)}$} (the following probabilities are conditional on this event):
+$\tau \leq \mu$, $\gamma^\tau \geq \eta$
+\begin{align}
+  \mathbb{P}(|\gamma^\tau - \eta | \geq t) &= \mathbb{P}(\tau \leq \frac{\log(\eta + t)}{\log(\gamma)})\\
+  &= \mathbb{P}(\mu - \tau = |\tau - \mu| \geq \mu - \frac{\log(\eta + t)}{\log(\gamma)})\\
+  &\leq 2 e^{-c(\mu - \frac{\log(\eta + t)}{\log(\gamma)})^2}\\
+  &\leq 2 e^{-c(\mu - \frac{\log(\eta + 1)}{\log(\gamma)})^2 t^2}
+\end{align}
+where the last line holds since $\mu - \frac{\log(\eta + t)}{\log(\gamma)} \geq (\mu - \frac{\log(\eta + 1)}{\log(\gamma)})t$ for all $t \in (0, 1)$ (which is showed in the next subsection).
+
+\textbf{if $\tau \geq \mu$}:
+$0 < \gamma^\tau \leq \eta$, so we only consider $0 < t < \eta$.
+\begin{align}
+  \mathbb{P}(|\gamma^\tau - \eta | \geq t) &= \mathbb{P}(\tau \leq \frac{\log(\eta - t)}{\log(\gamma)})\\
+  &= \mathbb{P}(\tau - \mu = |\tau - \mu| \geq \mu + \frac{\log(\eta - t)}{\log(\gamma)})\\
+  &\leq 2 e^{-c(\mu + \frac{\log(\eta - t)}{\log(\gamma)})^2}\\
+  &\leq 2 e^{-c(\mu - \frac{\log(\eta + 1)}{\log(\gamma)})^2 t^2}
+\end{align}
+where the last line holds since $\mu + \frac{\log(\eta - t)}{\log(\gamma)} \geq (\mu - \frac{\log(\eta + 1)}{\log(\gamma)})t$ for all $t \in (0, 1)$, \textit{under the assumption that} $\mu \leq \frac{\log(\eta + 1) - \frac{1}{\eta}}{\log(\gamma)}$ (which is showed in the next subsection).
+
+\textbf{if $\frac{\log(\eta)}{\log(\gamma)} \leq \tau \leq \mu$}:
+$\gamma^\mu \leq \gamma^\tau \leq \eta$.
+\begin{align}
+  \mathbb{P}(|\gamma^\tau - \eta | \geq t) &= \mathbb{P}(\mu \geq \tau \geq \frac{\log(\eta - t)}{\log(\gamma)})\\
+  &= \mathbb{P}(\mu - \tau = |\tau - \mu| \leq \mu - \frac{\log(\eta - t)}{\log(\gamma)})
+\end{align}
+If $t \geq \eta - \gamma^\mu$, $\mu - \frac{\log(\eta - t)}{\log(\gamma)} \leq 0$ and the preceding probability is $0$.
+
+\subsection{Side proofs}
+
+Let's show that:
+$$\forall 0 < t < 1, (\mu - \frac{\log(\eta + t)}{\log(\gamma)})^2 \geq \kappa t^2$$ for some constant $\kappa > 0$.\\
+First of all, note that $\mu > \frac{\log(\eta + t)}{\log(\gamma)}$ since $\mu \geq \frac{\log(\eta)}{\log(\gamma)} > \frac{\log(\eta + t )}{\log(\gamma)}$.\\
+Denote $g(t) = (\mu - \frac{\log(\eta + t)}{\log(\gamma)})/t$, we want to show that $g$ has a minimum $\kappa > 0$ over $(0, 1)$.\\
+\begin{align}
+  g'(t) &= - \frac{1}{t^2}(\mu - \frac{\log(\eta + t)}{\log(\gamma)}) + \frac{1}{t}\frac{-1}{(\eta + t) \log(\gamma)}\\
+  &= - \frac{1}{t^2}[\mu - \frac{\log(\eta + t)}{\log(\gamma)} + \frac{t}{(\eta + t) \log(\gamma)}]
+\end{align}
+
+To prove that $g$ is decreasing, we prove that $g'$ is non-positive by showing:
+\begin{align}
+  \mu &\geq \frac{\log(\eta)}{\log(\gamma)} &\geq \frac{\log(\eta + t)}{\log(\gamma)} - \frac{t}{(\eta + t)\log(\gamma)}\\
+  &\iff \log(\eta) &\leq \log(\eta + t) -  \frac{t}{\eta + t} = l(t)\\
+  l'(t) = \frac{1}{\eta + t} - \frac{1}{\eta + t} + \frac{t}{(\eta + t)^2} > 0
+\end{align}
+hence $l(t) > l(0) = \log(\eta)$, which in turn implies that $g$ is decreasing on $(0, 1)$.\\
+Finally:
+\begin{align}
+  g(t) &\geq g(1) = \mu - \frac{\log(\eta + 1)}{\log(\gamma)}
+\end{align}
+which is what we wanted, with $\kappa = \mu - \frac{\log(\eta + 1)}{\log(\gamma)}$.\\
+
+Then, let's show that:
+$$\forall 0 < t < 1, \mu + \frac{\log(\eta - t)}{\log(\gamma)} \geq (\mu - \frac{\log(\eta + 1)}{\log(\gamma)}$$
+
+
 \end{document}

@@ -151,7 +151,7 @@ Although the subGaussian property might look a bit difficult to showcase, the ne
 
 Bounded random variables are subGaussians, so how can we use that?
 
-\begin{thm}[Hoeffding's inequality]
+\begin{thm}[Hoeffding's inequality]\label{thm:hoeffding}
   Let $X_1, \dots, X_n$ be independent random variables such that $X_i \in [a_i, b_i]$ almost surely. Then, for any $t \in \mathbb{R}$:
   $$\mathbb{P}\left(\frac{1}{n} \sum_{i=1}^n (X_i - \mathbb{E}[X_i]\right) \geq t) \leq e^{-\frac{2 t^2 n^2}{\sum_{i=1}^n (b_i - a_i^2}}$$
 \end{thm}
@@ -364,7 +364,9 @@ QL is a model-free off-policy that uses Temporal Difference updates to maintain 
 
 In synchronous QL, the behaviour policy is replaced by $\mathbf{greedy}(Q_t)$, or $\epsilon-\mathbf{greedy}(Q_t)$ to keep on exploring. Also, many tweaks can be made such as using optimistic initial values or maintaining two estimates of $Q$. A common choice for the learning rate is $\alpha_i = \frac{1}{i}$.
 
-\begin{thm}[Convergence of Q-Learning]
+The core idea of Temporal Difference is that $r(s_t,a_t)+\gamma \max_{a\in\mathcal{A}}Q_t(s_{t+1},a) = \mathcal{T}^*(Q)(s,a)$ is actually an estimate of $Q^*$.
+
+\begin{thm}[Convergence of Q-Learning]\label{thm:QL-conv}
   If all state-action pairs are visited infinitely often and $$\sum_{i=1}^{+\infty}\alpha_i = +\infty \quad\text{and}\quad \sum_{i=1}^{+\infty}\alpha_i^2 < +\infty$$ then $Q_t$ will converge to $Q^*$ with probability 1 as $t$ tends towards infinity.
 \end{thm}
 

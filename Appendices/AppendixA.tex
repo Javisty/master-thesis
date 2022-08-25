@@ -1,9 +1,56 @@
 % Appendix A
 
-\chapter{Chapter 1} % Main appendix title
-
+\chapter{Proof of Lemma \ref{lem:1b}} % Main appendix title
 \label{AppendixA} % For referencing this appendix elsewhere, use \ref{AppendixA}
 
-\section{Section 1}
+The proof is directly derived from the proof of Lemma \ref{lem:1} from \citep{li_sample_2021}.
 
-Write appendix A here.
+Let's take an entry-wise consideration of $\tilde\beta_{1,t}$:
+\begin{align}
+  \tilde\beta_{1,t} (s,a) = \sum_{k = 1}^{K_t(s,a)}(1- \tilde\eta)^{K_t(s,a) - k}\tilde\eta(\gamma_{t_k+1(s,a)} \mathbf{P}_{t_k+1(s,a)}(s,a) - \tilde{\mathbf{P}}(s,a))\mathbf{V}^*
+\end{align}
+
+where
+\begin{align}
+  &t_k(s,a) = \text{time step when }(s,a) \text{ is visited for the }k\text{-th time}\\
+  &K_t(s,a) = \max \left\{ k \,|\, t_k(s,a) \leq t \right\}
+\end{align}
+the number of times $(s,a)$ has been visited during the $t$ first time steps. We simplify the notation with $t_k(s,a) = t_k$.
+
+Now, we claim that
+\begin{align}
+  \forall \, (s,a)\in \mathcal{S}\times \mathcal{A},\quad \left| \tilde\beta_{1,t} \right| \leq \gamma^{\tau_{min}}\sqrt{\tilde\eta} \log\left( \frac{SA\tilde T}{\delta} \right) \left\| \mathbf{V}^* \right\|_\infty
+\end{align}
+
+which is the result needed for Lemma \ref{lem:1b}. Let's prove this inequality then.
+
+Firstly, the vectors of the family $$\left\{ \gamma_{t_k+1} \mathbf{P}_{t_k+1}(s,a) \,|\, 1\leq k\leq K\right\}$$ are identically and independently distributed for any $(s,a) \in \mathcal{S}\times \mathcal{A}$ and any $K\in \mathbb{N}^*$. Indeed, for any $((i_1, l_1), \dots, (i_K, l_K)) \in (\mathcal{S}\times \mathbb{R}_+^*)^K$:
+
+\begin{align*}
+  &\mathbb{P} \left( (s_{t_k+1}, \tau_{t_k+1}) = (i_k, l_k) \,\forall\, 1\leq k \leq K \right) \\&= \mathbb{P} \left((s_{t_k+1}, \tau_{t_k+1}) = (i_k, l_k)\,\forall\, 1\leq k\leq K-1\ \text{and}\ (s_{t_K+1}, \tau_{t_K+1}) = (i_K, l_K) \right)\\
+  &=\sum_{m \in \mathbb{N}^*}\mathbb{P}\left((s_{t_k+1}, \tau_{t_k+1}) = (i_k, l_k)\,\forall\, 1\leq k \leq K-1\ \text{and}\ t_K = m\ \text{and}\ (s_{m+1}, \tau_{m+1}) = (i_k, l_k) \right)\\
+  &\overset{(i)}{=}\sum_{m\in \mathbb{N}^*} \mathbb{P} \left((s_{t_k+1}, \tau_{t_k+1}) = (i_k, l_k)\,\forall\, 1\leq k\leq K-1\ \text{and}\ t_K=m \right) \mathbb{P} \left( (s_{m+1}, \tau_{m+1}) = (iK, l_K) \,|\, s_m = s, a_m=a \right)\\
+  &= \mathbb{P}_{s,a} \left(i_K, l_K \right) \sum_{m \in \mathbb{N}^*} \mathbb{P} \left((s_{t_k+1}, \tau_{t_k+1}) = (i_k, l_k)\,\forall\, 1\leq k\leq K-1\ \text{and}\ t_K = m \right)\\
+  &= \mathbb{P}_{s,a} \left(i_K, l_K \right) \mathbb{P} \left((s_{t_k+1}, \tau_{t_k+1}) = (i_k, l_k)\,\forall\, 1\leq k \leq K-1 \right)
+\end{align*}
+
+where $(i)$ uses the Markov property of the SMDP, and $(s_{t_K}, a_{t_K}) =(s,a)$ from the definition of $t_K = t_K(s,a)$. By induction, one gets
+\begin{align}
+  \mathbb{P} \left((s_{t_k+1}, \tau_{t_k+1}) = (i_k, l_k)\,\forall\, 1\leq k\leq K \right) = \prod_{j=1}^{K} \mathbb{P}_{s,a} \left(i_j, l_j \right)
+\end{align}
+
+which proves the sought independency. Then we shall resort to Hoeffding's inequality (cf \ref{thm:hoeffding}) to bound $\tilde\beta_{1,t}$. To begin with, for all $k\geq 1$:
+\begin{align}
+  &0 \leq \gamma_{t_k+1} \mathbf{P}_{t_k+1}(s,a) \mathbf{V}^* \leq \gamma^{\tau_{min}}\left\| \mathbf{V}^* \right\|_\infty \quad \text{and}\quad 0 \leq \tilde{\mathbf{P}}(s,a)\mathbf{V}^*\leq \gamma^{\tau_{min}}\left\| \mathbf{V}^* \right\|_\infty\\
+  &\implies \left| (1-\tilde\eta)^{K-k}\tilde\eta (\gamma_{t_k+1}\mathbf{P}_{t_k+1}(s,a) - \tilde{\mathbf{P}}(s,a))\mathbf{V}^* \right| \leq (1-\tilde\eta)^{K-k}\tilde\eta \gamma^{\tau_{min}} \left\| \mathbf{V}^* \right\|_\infty
+\end{align}
+
+and by definition $\tilde{\mathbf{P}}(s,a)$ is the expectation of $\gamma_{t_k+1} \mathbf{P}_{t_k+1}(s,a)$. From Hoeffding's inequality, for any $K\geq 1$, with probability $1 - \frac{\delta}{SA\tilde T}$:
+\begin{align}
+  \left| \sum_{k=1}^{K}(1-\tilde\eta)^{K-k}\tilde\eta(\gamma_{t_k+1} \mathbf{P}_{t_k+1}(s,a) - \tilde{\mathbf{P}}(s,a))\mathbf{V}^* \right| &\leq \sqrt{\frac{1}{2}\sum_{k=1}^{K} \left( (1-\tilde\eta)^{K-k}\tilde\eta \gamma^{\tau_{min}} \left\| \mathbf{V}^* \right\|_\infty \right)^2 \log\left( \frac{SA\tilde T}{\delta} \right)}\\
+  &\leq \gamma^{\tau_{min}} \sqrt{\tilde\eta \log\left( \frac{SA\tilde T}{\delta} \right)} \left\| \mathbf{V}^* \right\|_\infty
+\end{align}
+
+since $$\sum_{k=1}^{K} \left( (1-\tilde\eta)^{K-k}\tilde\eta \right)^2 \leq \tilde\eta^2 \sum_{j=0}^{\infty}(1-\tilde\eta)^j = \frac{\tilde\eta^2}{1-(1-\tilde\eta)} = \tilde\eta$$
+
+The proof for Lemma \ref{lem:1b} concludes by taking the union bound over all state-action pairs $(s,a)$, and all $1\leq K \leq \tilde T$.

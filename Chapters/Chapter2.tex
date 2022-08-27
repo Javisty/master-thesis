@@ -178,6 +178,23 @@ After introducing Markov Chain, we will now move on to the next level with \emph
   In general the reward is stochastic (i.e. drawn from a probability distribution specific at each state-action pair), however in practice only the expected reward matters, so we already assume a deterministic reward function for convenience.
 \end{defi}
 
+\begin{figure}[htb]
+  \centering
+  \def\svgwidth{340pt}
+  \input{communicating_RiverSwim.pdf_tex}
+  \caption{A classical example of MDP: River Swim, with $N$ states. The agent tries to swim up the current, where the high reward is. It starts at $s_1$, can try to move right or left, going right is difficult though. On the rightmost state, the agent gets $r=1$ with $0.6$ probability, and gets $r=0.05$ by going left at the leftmost state. This MDP is particularly difficult to train on, as the agent needs to force exploration with no reward a lot to discover the high reward on the right.}
+  \label{fig:river}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.3\linewidth, keepaspectratio]{four_rooms.png}
+\decoRule
+\caption{Another classical MDP: four rooms GridWorld. The agent starts in bottom left room, and the only reward is in the top right one. It can move in all four directions, except there's a $1/3$ chance of actually going in an other direction. The common set of options (see Section \ref{subsec:options}) to consider is moving from one hallway to an other.}
+\label{fig:4rooms}
+\end{figure}
+
+
 In decision making problems, an \emph{agent} moves stochastically from state to state in an MDP by taking actions, and depending on its trajectory and decisions receives rewards along the way. This generates a \textbf{history} of transitions $(s_i, a_i, r_i)_{i \in \mathcal{N}}$. Hence the goal is to learn a (near-)optimal decision rule to maximise the rewards, from such history/ies. The agent starts from an initial state based on an \emph{initial distribution} $\mu_0 \in \mathbf{\Delta}(\mathcal{S})$.
 
 A decision rule is defined as a \emph{policy} $\pi : \mathcal{S} \to \Delta(\mathcal{A})$, where $\Delta(\mathcal{A})$ is the set of probability measures over $\mathcal{A}$. $\pi$ is \emph{deterministic} if it maps each state to only one action: $\pi : \mathcal{S} \to \mathcal{A}$. And a policy is \emph{stationary} if it does not depend on the current time step.
@@ -186,9 +203,8 @@ Following one stationary policy on $\mathcal{M}$ induces a Markov Reward Process
 
 This link with Markov Chains leads to the following definitions:
 
-% CITE RONAN'S THESIS
 \begin{defi}[Classification of MDPs]
-  An MDP is:
+  As explained in \citep{fruit_thesis_2019}, Definition 2.2,  a MDP is:
   \begin{enumerate}
   \item \textbf{Ergodic} if the Markov Chain induced by any deterministic stationary policy is ergodic
   \item \textbf{Unichain} if the Markov Chain induced by any deterministic stationary policy is composed of one ergodic sub-Markov Chain in addition to a set of transient states
@@ -267,8 +283,8 @@ As one can see, those quantities represent what an agent can expect to get as re
 One can already see how relevant the value of a policy is when seeking optimality, but what makes those functions so interesting is the following property:
 
 \begin{defi}[Bellman operator]
-  The Bellman operator associated to a policy $\pi$ is $$\mathcal{T}^\pi : \begin{cases} &\mathbb{R}^S \to \mathbb{R}^S\\ V &\mapsto \mathcal{T}^\pi(V) \end{cases}$$ where $$\forall \, s \in \mathcal{S},\quad \mathcal{T}^\pi(V)(s) = r(s, \pi(s)) + \gamma \sum_{s'\in \mathcal{S}} p(s' \,|\, s, \pi(s)) V(s')$$
-  $\mathcal{T}^\pi$ being a $\gamma$-contraction, $V^\pi$ is the only fixed point: $$\forall \, s \in \mathcal{S},\quad V^\pi(s) = r(s, \pi(s)) + \gamma \sum_{s'\in \mathcal{S}} p(s' \,|\, s, \pi(s)) V^\pi(s')$$\\
+  The Bellman operator \citep{bellman1957markovian} associated to a policy $\pi$ is $$\mathcal{T}^\pi : \begin{cases} &\mathbb{R}^S \to \mathbb{R}^S\\ V &\mapsto \mathcal{T}^\pi(V) \end{cases}$$ where $$\forall \, s \in \mathcal{S},\quad \mathcal{T}^\pi(V)(s) = r(s, \pi(s)) + \gamma \sum_{s'\in \mathcal{S}} p(s' \,|\, s, \pi(s)) V(s')$$
+  $\mathcal{T}^\pi$ being a $\gamma$-contraction, $V^\pi$ is the only fixed point \citep{blackwell1962discrete}: $$\forall \, s \in \mathcal{S},\quad V^\pi(s) = r(s, \pi(s)) + \gamma \sum_{s'\in \mathcal{S}} p(s' \,|\, s, \pi(s)) V^\pi(s')$$\\
   Thanks to this result, the greedy policy can be obtained from $V$: $$\pi_g(s) = \arg\max_{a \in \mathcal{A}} \left[ r(s,a) + \gamma \sum_{s' \in \mathcal{S}}p(s' \,|\, s, a) V^*(s') \right]$$
   A similar result holds for the Q-value: $$\forall \, (s, a) \in \mathcal{S}\times \mathcal{A},\quad Q^\pi(s, a) = \mathcal{T}^\pi(Q)(s,a) = r(s, a) + \gamma \sum_{s' \in \mathcal{S}} p(s \,|\, s,a) V^\pi (s')$$
   When considering any optimal policy, one get the \textbf{optimal Bellman operator}: $$\mathcal{T}^*(V)(s) = \max_{a \in \mathcal{A}} \left[ r(s, a) + \gamma \sum_{s' \in \mathcal{S}} p(s' \,|\, s,a)V(s') \right]$$
@@ -342,7 +358,7 @@ These ideas are showcased in the enxt subsection.
 \subsection{Q-Learning}
 \label{subsec:Rl-QL}
 
-Q-Learning (QL) is one of the oldest and most important algorithm in RL. Indeed, numerous variants have been proposed since, and proofs for theoretical guarantees are still being published nowadays.
+Q-Learning (QL) is one of the oldest and most important algorithm in RL \citep{watkins1989learning}. Indeed, numerous variants have been proposed since, and proofs for theoretical guarantees are still being published nowadays.
 
 QL is a model-free off-policy that uses Temporal Difference updates to maintain an estimate of $Q^*$, which then can be used to get $\pi^*$. It is very simple, as shown in algorithm \ref{alg:QL}.
 
@@ -362,11 +378,11 @@ QL is a model-free off-policy that uses Temporal Difference updates to maintain 
 \normalsize
 \end{algorithm}
 
-In synchronous QL, the behaviour policy is replaced by $\mathbf{greedy}(Q_t)$, or $\epsilon-\mathbf{greedy}(Q_t)$ to keep on exploring. Also, many tweaks can be made such as using optimistic initial values or maintaining two estimates of $Q$. A common choice for the learning rate is $\alpha_i = \frac{1}{i}$.
+In synchronous QL, the behaviour policy is replaced by $\mathbf{greedy}(Q_t)$, or $\epsilon-\mathbf{greedy}(Q_t)$ to keep on exploring. Also, many tweaks can be made such as using optimistic initial values or maintaining two estimates of $Q$ \citep{even-dar_convergence_2001, hasselt2010double}. A common choice for the learning rate is $\alpha_i = \frac{1}{i}$.
 
 The core idea of Temporal Difference is that $r(s_t,a_t)+\gamma \max_{a\in\mathcal{A}}Q_t(s_{t+1},a) = \mathcal{T}^*(Q)(s,a)$ is actually an estimate of $Q^*$.
 
-\begin{thm}[Convergence of Q-Learning]\label{thm:QL-conv}
+\begin{thm}[Convergence of Q-Learning \citep{jaakkola1994reinforcement}]\label{thm:QL-conv}
   If all state-action pairs are visited infinitely often and $$\sum_{i=1}^{+\infty}\alpha_i = +\infty \quad\text{and}\quad \sum_{i=1}^{+\infty}\alpha_i^2 < +\infty$$ then $Q_t$ will converge to $Q^*$ with probability 1 as $t$ tends towards infinity.
 \end{thm}
 

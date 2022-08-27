@@ -1,19 +1,114 @@
 % Chapter Template
 
 \chapter{Hierarchical Reinforcement Learning by Temporal Abstraction} % Main chapter title
-
 \label{Chapter3}
 
+So far, a very wide category of MDPs has been considered, with very few assumptions on the state-action space. However, in many cases the agent could make use of some regular behaviour in the MDP to learn faster/more from each experience. This is the domain of Hierarchical Reinforcement Learning, in which the MDP is decomposed into subproblems, thus creating different scales of learning. A particular instance of such approach is Temporal Abstraction: exploiting temporal regularities to reduce the problem complexity. This is a step towards human thinking, as it corresponds to learning to look at the big picture, rather than keeping eyes on our feet.
 
+Multiple frameworks have been suggested in the literature, but we will introduce the most adopted one in the next section.
 
 \section{Options framework and Semi-Markov Decision Processes}
 
-Temporal abstraction, options framework, SMDPs, changes (different discount/value...)
+\subsection{Options}
+\label{subsec:options}
+
+The \emph{option framework} introduced in \citep{sutton_between_1999} formalizes the notion of macro-actions: viewing a sequence of actions as a larger action towards a goal.
+
+\begin{defi}[Options]
+  An option is a triple $\langle \mathcal{I}, \pi, \beta \rangle$, where:
+  \begin{enumerate}
+  \item $\mathcal{I} \subseteq \mathcal{S}$ is the \textbf{initiation set}
+  \item $\pi \in \Pi$ is the option policy
+  \item $\beta: \mathcal{S} \to [0, 1]$ is the termination condition
+  \end{enumerate}
+  The option can be started from any state $s \in \mathcal{I}$, meaning the agent follows policy $\pi$ until it terminates at a state $s'$ with probability $\beta(s')$.\\
+  An action $a \in \mathcal{A}$ defines a \textbf{primitive option} $o_a$ which can start everywhere, always takes action $a$ and terminates with probability 1 in every state.
+\end{defi}
+
+As one can see, choosing an option amounts to following a (winning?) strategy depending on the current location, until another cross-road state is reached, thus demanding for a new decision. In that respect, an agent can start acting with a well defined set of options rather than actions. The direct benefit is to potentially largely reduce the number of state-actions pairs. This is temporal abstraction in the sense that the there's a varying number of steps between two decisions.
+
+\begin{defi}[Options Framework]
+  A set of options $\mathcal{O}$ is \textbf{well-defined} if there is always an option available for the agent to play. More specifically, the union of initiation sets includes initial states and terminal states (states with non-null probability that an option temrinates at). An option set including all the primitive actions is obviously well-defined.\\
+  In such case, one can define a \textbf{policy over options} $\mu: \mathcal{S}\times \mathcal{O} \to [0,1]$, that an agent follows at decision epochs. 
+\end{defi}
+
+It is now clear that with a well-defined option framwork, an agent can actually deal with the state-option space $\mathcal{S}\times \mathcal{O}$ as a regular state-action space. The following result showcases this similarity:
+
+\begin{thm}[Option values]
+  For a policy over options $\mu$, its value is $$V^\mu(s) = \mathbb{E}_\mu \left[ \left(\sum_{t=0}^{k-1}\gamma^t r_t \right) + \gamma^k V^\mu(s_{k}) \,|\, \varepsilon(s, \mu, 0) \right]$$
+  where $\varepsilon(s, \mu, t)$ is the event that $\mu$ makes a decision $o_t$ from state $s$ at time $t$, and $k$ is the duration of $o_t$. The \textbf{Q-value function} of $\mu$ is defined similarly.\\
+  Then \textbf{Q-Learning for options}, with update $$Q(s, o) = (1 - \alpha)Q(s,o) + \alpha \left( r + \gamma^k V(s') \right)$$ converges, under similar conditions as in Theorem \ref{thm:QL-conv}, and $\mathbb{E}_\mu \left[k \right] < +\infty$.
+\end{thm}
+
+In the end, by providing a set of well-defined options as prior knowledge, one can significantly reduce the size of the problem and the number of updates, with almost no change in the algorithm. This difference actually lies in the reward discount: because of the stochastic duration time, not only do we need to apply $\gamma^k$, but also the reward $r$ is actually the discounted cumulative reward of the option.
+
+Even though the number of updates per time step is lesser, it appears to be less sample efficient, in the sense that the steps taken inside an option aren't contributing much. In that respect, \citep{sutton_between_1999} also introduces \emph{Intra-Option Q-Learning}: an update is also done for time steps within options, not only for the current option (weigthed by the termination probability) but as well for options that would have taken the same action in the current state. That way, no experience is lost. And finally, there is the possibility to \emph{interrupt} options, whenever an other option can be started with higher value.
+
+The upsides and downsides of temporal abstraction with the option framework are less obvious than it appears at first thought; this is actually an open question, that has already been the subject of several projects in the literature, some of which will be presented in a later section of the chapter.
+
+However the option framework, even if intuitive, isn't the only approach in that regard; in the next section are introduced \emph{Semi-Markov Decision Processes}, a generalisation of MDPs that includes options.
+
+\subsection{Semi-Markov Decision Processes}
+\label{subsec:SMDP}
+
+While classical MDPs evolve at the regular unit time step, it is intuitive that in real-world problems some actions take more time to execute than others, and the duration time can vary even for a same action. SMDPs model this behaviour:
+
+\begin{defi}[Semi-Markov Decision Process]
+  A Semi-Markov Decision Process is defined as $M = \langle \mathcal{S}, \mathcal{A}, p, r \rangle$, alike MDPs, with the difference that an agent takes $0<\tau$ time to transition from state $s$ to state $s'$, with probability $p(s', \tau \,|\, s,a)$. For practical reasons, we suppose that $\mathbb{E} \left[\tau \right] < +\infty$. We also assume that $0 < \tau_{min} \leq \tau \leq \tau_{max} \leq +\infty$.\\
+  A history related to a SMDP is now made of transitions $\left( s_t, a_t, r_t, \tau_t \right)_t$.\\
+  The \textbf{total time} at time step $t$ is defined as $\sigma_t = \sum_{i=0}^{t-1} \tau_i$ ($\sigma_0 = 0$).\\
+  The \textbf{total cumulative reward} is now $\sum_{t = 0}^{+ \infty} \gamma^{\sigma_t} r_t$.
+\end{defi}
+
+Obviously a SMDP with $\tau=1$ is a MDP. Moreover, the condition on $\tau_{min} \neq 0$ is here to ensure the convergence of the total cumulative reward. Indeed, if $\tau_{\min} = 0$ then one can consider the sequence of duration times $\{\tau_t = 1/(t + 1)^2\}_{t=0}^{\infty}$; it is well known that this series converges toward $\pi^2/6$, so that $\sigma_t < \pi^2/6$ for all $t$, hence $$\sum_{t = 0}^{\infty} \gamma^{\sigma_t} r_t \geq \sum_{t=0}^{\infty} \gamma^{\frac{\pi^2}{6}} = + \infty$$
+
+To be almost sure this doesn't happen and for convenience, we assume $\tau_{min} > 0$.
+
+Now that SMDPs are clearly defined, it is easy to see how a MDP equipped with an option framework naturally defines a SMDP, in which $\tau$ is the number of steps taken by the option/action, and the rewards are redefined as $$r_{smdp}(s, o) = \mathbb{E}_{\pi_o} \left[ \sum_{i=0}^{\tau-1}\gamma^i r_{mdp}(s_i, \pi_o(s_i)) \,|\, s_0=s\right]$$ We also require the options to be defined everywhere on the state space $\mathcal{I} = \mathcal{S}$.
+
+As it has been done for options, we shall adapt the values and Q-values definitions to SMDPs:
+
+\begin{thm}[Values in SMDP]\label{thm:values-SMDP}
+  The value and Q-value functions are now defined as:
+  \begin{align*}
+    \forall s \in \mathcal{S}, \qquad &V^{\pi}(s) := \mathbb{E} \left[\sum_{t = 0}^{\infty} \gamma^{\sigma_{t}} r(s_t, a_t) \, \middle| \,  s_0 = s \right]\\
+    \forall (s, a) \in \mathcal{S} \times \mathcal{A}, \qquad &Q^{\pi}(s,a) := \mathbb{E} \left[\sum_{t = 0}^{\infty} \gamma^{\sigma_{t}} r(s_t, a_t) \, \middle| \,  s_0 = s,\, a_0 = a \right]
+  \end{align*}
+  and the corresponding Bellman operators:
+  \begin{align*}
+    \mathcal{T}^\pi(Q^{\pi})(s, a) &:= r(s, a) + \mathbb{E}_{(s', t) \sim p(\cdot, \cdot | s, a)} \left[ \gamma^t Q^{\pi}(s', \pi(s')) \right] = Q^{\pi}(s, a)\\
+    \mathcal{T^*}(Q)(s, a) &:= r(s, a) + \mathbb{E}_{(s', t) \sim p(\cdot, \cdot | s, a)} \left[ \gamma^t \max_{a' \in \mathcal{A}} Q(s', a') \right]\\
+    &= r(s, a) + \int_{s' \in \mathcal{S}} \int_0^{+ \infty} \gamma^t V^*(s') p(s', t | s, a) dt ds' \\
+    &= r(s, a) + \int_{s' \in \mathcal{S}} V^*(s') \tilde p(s' | s, a) ds'
+  \end{align*}
+  where $$\tilde p(s', t | s, a) = \mathbb{E}\left[ \gamma^\tau \,|\, s'\right] = \int_0^{+\infty} \gamma^t p(s', t | s, a) dt$$ is the \textbf{expected discounted probability kernel}.
+\end{thm}
+
+We highlight the change in the optimal Bellman operator: because the discount factor is time dependent, and the duration time is not necessarily independent to the next state, $\gamma$ is no longer a free factor in front of the probability matrix $P$.
+
+Hence, \emph{Q-Learning for SMDP} is adapted from QL with the update $$Q_t(s_{t-1}, a_{t-1}) = (1 - \alpha_t)Q_{t-1}(s_{t-1}, a_{t-1}) + \alpha_t \left(r(s_{t-1}, a_{t-1}) + \gamma^{\tau_{t-1}} \max_{a\in \mathcal{A}} Q_{t-1} (s_t, a)\right)$$
+
+The algorithm has been presented in \citep{bradtke_reinforcement_1994}, and its convergence proven in \citep{parr_hierarchical_1998} assuming independency between $\tau$ and $s'$, though the proof can easily be adapted for the general formulation.
+
 
 \section{Algorithms in the literature}
 
-Q-Learning with options, RMAX, Option-Critic, SUCRL. Also: learning options, goal states...
+In this section we do an overview of the literature of temporal abstraction, ranging from learning/discovering options to model-based algorithms for SMDPs.
+
+Temporal abstraction has been there for a long time already (\cite{parr_hierarchical_1998, fikes_learning_1972}), presented as a first step towards human intelligence, and a fitting approach to many settings, with promising benefits. Yet, the option framework introduced in \citep{sutton_between_1999} has really set up the reference for temporal abstraction in reinforcement learning for years to come. Indeed, thanks to the flexibility of the model, algorithms have been presented that improve the option interruption \citep{mann_time-regularized_2014} or learn better options through different representations \citep{bacon_option-critic_2016, machado_temporal_2021, sorg_linear_2010}, but also research has been conducted on the cost of using options \citep{solway_optimal_2014, botvinick_hierarchically_2009}, all of which helps expanding our overall understanding of hierarchical reinforcement learning.
+
+Another popular framework are goal-conditionned hierarchies \citep{nachum_data-efficient_2018}, in which the strategy consists in making the high-level decision of a long-term goal; then solving the problem comes down to learning how to reach the goal efficiently. In that last paper, the algorithm HIRO works on a two-level learning: the higher-level policy gets the feedback, and then send a high-level goal to the lower-level policy, along with an intrinsic reward. Hence the learning is done one personalised feedback; and thanks to the parameterisation of the sub-problems, the lower-level policy is then able to reuse experience from several sub-problems. The experiments validate the method.
+
+In the options framework, that would amount to simultaneous option and intra-option learning. \citep{bacon_option-critic_2016} explores the idea in that context: improving parameterised options with policy gradient alongside the policy over options. An interesting point is that termination conditions are also learned; and during experiments, the authors noticed that learned options tended to stop earlier and earlier. Indeed, reducing options to the primitive actions yields a well-defined framework, which is not necessarily the case for the learned options framework; hence in \citep{harb_when_2017} a termination cost decreasing as the duration of the option increases has been introduced, to force the algorithm to learn long options and thus benefiting from temporal abstraction perks.
+
+Finally, in \citep{fruit_exploration--exploitation_2017} a model-based approach for SMDP, directly derived from Upper-Confidence RL \citep{jaksch_near-optimal_2010}, is presented. The particularly interesting contribution of this work is that it provides the first regret analysis with options, and an insightful discussion about what makes a good option framework. The experiments reveal that preserving the average reward and the distance between pairs of states are keys to a successful temporal abstraction. That observation is compatible with the short-lived options in \citep{bacon_option-critic_2016}.
 
 \section{Properties of Temporal Abstraction}
 
-Improve/speed up (or not) exploration/learning, illustrative experiments
+In this section, we will highlight the studies of temporal abstraction done in \citep{jong_utility_2008,nachum_why_2019}. That should give a first answer to the questions raised in the previous section about the properties of such approach.
+
+\citep{jong_utility_2008} aims at discovering whether using options comes down to augmenting the core MDP (i.e. giving more possibilities to the agent) or on the contrary abstracting it, ignoring parts of the state space. Multiple experiments are conducted, on a basic GridWorld isntance and Q-Learning. A first study reveals that using options is similar to using Experience Replay (a trick to use samples multiple times): it concentrates experience around some specific trajectories, that then get more updates, alike what is done in Experience Replay. And these trajectories can be naturally identified by the agent without options. Hence, temporal abstraction isn't more sample efficient. The other aspect explored in the paper is the effect of options on exploration. It is clear that using options instead of primitive actions can significantly lower the problem size, which in turns accelerate learning, however entirely removing primitive actions can be very bad. Indeed, whenever the subgoals of the options do not exactly correspond to the most profitable state, then the agent loses a massive amount of time trying to get there, even though the option policies provided are optimal for the subtasks. In other words, the option framework must be so that not only the subtasks are solved efficiently, but also the subtasks are relevant. Otherwise the time needed for the agent to get to the goal can be highly increased, and the performance is deeply hurt. Thus, it is good to limit the availability of subtasks on some cases. This connects with the notion of \emph{diameter} for options introduced in \citep{fruit_exploration--exploitation_2017}, the shortest longest path between two states. To conclude, an option framework acts as a prior knowledge, leading to an exploration bias that, if ill-defined, can hurt more than help.
+
+On the other hand, \citep{nachum_why_2019} is an experimental verification or reject of what the authors identified as the 4 hypotheses of the benefits of hierarchy: future rewards are propagated back faster, explored states are sort of clustered by relevance, the actions taken are all relevant towards future rewards, and finally non important actions aren't explored, so that the agent can quickly focus on profitable, high-level actions. Four environments are considered, with three different hierarchical algorithms compared to a classical agent trained on the same experience. A first experimental setting consists in exploring with varying option durations, and separately updating the high-level policy with several transition lengths. Thus the first two hypotheses are studied, one for exploration and the other for learning. The results indicate that learning from temporally extended transitions can help, however the benefits are quickly capped for an increasing duration. Regarding exploration, it indeed seem to be improved. Then, a second set of experiments is carried out in which only hierarchical learning is showcased, and not exploration. The results draw the conclusion that the impact of learning on options is negligible, the benefits actually come from learning from multi-step rewards, which does not need a specific non-hierarchical agent to train form. The last experiments are conducted in order to see whether the sample from hierarchical exploration are better. Two exploration strategies are compared, and different agents trained with this experience. In the end, the results show that indeed, the exploration is better, as non-hierarchical agents can achieve similar results than hierarchical agents with it.
+
+Overall, those two papers give a good overview of the difficulties encountered when designing and anlysing hierarchical methods. It is also interesting to note how those works are based on experiments, as, once again, it appears that the theoretical understandings are lacking for this field of research.

@@ -267,3 +267,23 @@ which are the main elements to derive, from Theorem \ref{thm:5b}:
     \end{align}
 \end{thm}
 
+\section{Discussion}
+\label{sec:discussion}
+
+In the end, we managed to obtain a sample complexity of QL for SMDP very similar to classical QL (Theorems \ref{thm:1} and \ref{thm:1b}). In fact, one simply needs to replace $\gamma$ with $\gamma^{\tau_{min}}$  in the bound. What does that mean? If $\tau$ can be less than $1$, then it is worse, but it is an improvement otherwise. That can be intuitively understood by the way the discount factor works: because of it, higher duration means lesser perceived rewards by the agent, hence there's less variation in value due to future rewards. For instance, a simulation on the option ``go from bottom hallway to middle-right one'' in the four rooms GridWorld (cf Figure \ref{fig:4rooms}) gives the duration distribution showed in Figure \ref{fig:duration}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\linewidth, keepaspectratio]{duration_option_4rooms.png}
+\decoRule
+\caption{Empirical distribution of the duration of an option in the four rooms GridWorld, with mean $8.66$ steps. The $1$ step duration corresponds to cases when the agent unluckily goes in the wrong room from the starting hallway.}
+\label{fig:duration}
+\end{figure}
+
+In that concrete example, the bound should be the same as for classical QL, as $\tau_{min} = 1$.
+
+However, this bound can seem rather crude: $\tau$ could very well have an expectation of $100$ while $\tau_{\min} = 0.1$, in which case one can expect the theoretical result to be loose compared to reality. For that reason, a next step is to look more precisely at the proof in order to maybe get a tighter $\tilde T$, probably under some assumptions on $\tau$. For instance, the proof of Lemma \ref{lem:1b} uses Hoeffding's Inequality by bounding $\gamma_{t_k+1} \mathbf{P}_{t_k+1}(s,a) - \tilde{\mathbf{P}}(s,a)$ with $\gamma^{\tau_{min}}$, as for the uniform distribution; yet one can expect to get a better inequality, as this quantity should concentrate better in many cases.
+
+Another interesting follow-up would be to adapt the proof to the more specific case of options.
+
+Finally, the reader might have noticed that the bound holds for the sample complexity \emph{with respect to decision epochs} $t$, rather than the total duration time $\sigma_t$; yet, the latter one would make more sense, as the real cost is the learning time rather than the number of decisions made. This is another prospect to explore.

@@ -1,0 +1,92 @@
+%% Creator: Inkscape 1.1.2 (b8e25be8, 2022-02-05), www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'communicating_RiverSwim.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{604.73983645bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.23520102)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{communicating_RiverSwim.pdf}}%
+    \put(0.93415466,0.12094756){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $s_N$\end{minipage}}}%
+    \put(0.75026781,0.12037184){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.33040373\unitlength}\raggedright $s_{N-1}$\end{minipage}}}%
+    \put(0.93392041,0.23957471){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.6$\\ $(r=1)$\end{minipage}}}%
+    \put(0.7594562,0.21904991){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.6$\end{minipage}}}%
+    \put(0.84203212,0.15378257){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.35$\end{minipage}}}%
+    \put(0.84160615,0.0520501){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $1$\end{minipage}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{communicating_RiverSwim.pdf}}%
+    \put(0.67499125,0.15789925){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.35$\end{minipage}}}%
+    \put(0.67494326,0.10360153){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.05$\end{minipage}}}%
+    \put(0.67191952,0.05352102){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $1$\end{minipage}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{communicating_RiverSwim.pdf}}%
+    \put(0.84198414,0.09787847){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.4$\end{minipage}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{communicating_RiverSwim.pdf}}%
+    \put(0.02976956,0.12452384){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.33040373\unitlength}\raggedright $s_1$\end{minipage}}}%
+    \put(0.02308335,0.22320191){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.4$\end{minipage}}}%
+    \put(0.10565928,0.15793457){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.6$\end{minipage}}}%
+    \put(0.10561128,0.10099108){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.05$\end{minipage}}}%
+    \put(0.10258754,0.0562021){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $1$\end{minipage}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{communicating_RiverSwim.pdf}}%
+    \put(0.19371674,0.22480829){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.6$\end{minipage}}}%
+    \put(-0.0012515,0.04109531){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $1$\\ $(r=0.05)$\end{minipage}}}%
+    \put(0.19908608,0.12301893){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.33040373\unitlength}\raggedright $s_2$\end{minipage}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{communicating_RiverSwim.pdf}}%
+    \put(0.2793978,0.15899288){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.35$\end{minipage}}}%
+    \put(0.27934981,0.10204939){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.05$\end{minipage}}}%
+    \put(0.27897183,0.05726041){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $1$\end{minipage}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{communicating_RiverSwim.pdf}}%
+    \put(0.37520148,0.12309989){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.33040373\unitlength}\raggedright $s_3$\end{minipage}}}%
+    \put(0.36851528,0.22177796){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.6$\end{minipage}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{communicating_RiverSwim.pdf}}%
+    \put(0.45393872,0.15912398){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.35$\end{minipage}}}%
+    \put(0.45389073,0.10218048){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $0.05$\end{minipage}}}%
+    \put(0.45351275,0.05739151){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.21134427\unitlength}\raggedright $1$\end{minipage}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{communicating_RiverSwim.pdf}}%
+  \end{picture}%
+\endgroup%

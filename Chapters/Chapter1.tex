@@ -1,7 +1,6 @@
 % Chapter 1
 
 \chapter{Introduction}
-
 \label{chapter1}
 
 %------------------------------------------------------------------------------
@@ -10,19 +9,15 @@
 
 %------------------------------------------------------------------------------
 
-\section{Journey to getting reliable learning agents}
+\section{Motivation}
 
-UCRL2, Q-Learning with regret/sample complexity guarantees.
-
-
-\section{Capitalizing on environment structure}
-
-Hierarchical Reinforcement Learning, Temporal/State Abstraction.
+Reinforcement Learning \citep{sutton_reinforcement_2018} is an active area of machine learning research, that deals with online control problems: how should an agent behave depending on an unknown environment. Most algorithms adapt methods from Dynamic Programming, using e.g. function approximation to try and learn from trajectories of transitions; and overall get good results. However, as for most of the machine learning problems, RL methods ususally suffer a lot from a growing size of the environment. To handle such difficulty, the paradigm of Hierarchical Reinforcement Learning was introduced, with the aim of exploiting apparent structure in the problem to alleviate the quantity of information needed to learn. Temporal abstraction \citep{sutton_between_1999} is probably the main strategy, where decisions aren't made at every steps; it has received a lot of attention lately, and produced good results \citep{fruit_exploration--exploitation_2017, bacon_option-critic_2016, machado_temporal_2021}. Yet, while many speculations have been formulated and experiments conducted \citep{nachum_why_2019,jong_utility_2008}, it is still not clear why, how and when temporal abstraction guarantees improvement; in other words, theoretical understanding of the difference from classical RL is still lacking in the literature. Thus, this thesis aims at deepening it through the study of an important algorithm.
 
 
-\section{Providing better Options}
+\section{Outline}
 
-Goal and contribution: use Option framework to gain in efficiency.
+Basic theory of Markov Chains and Concentration Inequalities are first presented in Chapter \ref{chapter2}, as those are crucial theoretical tools for the performance analysis of RL algorithms. In the same chapter will also be introduced Markov Decision Processes, the mathematical model at the heart of RL, before describing quickly the horizon of Reinforcement Learning.
 
+Then a quick state-of-the-art of temporal abstraction in RL will be done in Chapter \ref{Chapter3}, so that the reader gets an idea of the main approaches and difficulties of the field. That will then finish to motivate the work in this thesis.
 
-\section{Outline of the thesis}
+Finally, the theoretical proof for the sample complexity of one of the first algorithms for temporally-extended actions is displayed in Chapter \ref{Chapter4}.
